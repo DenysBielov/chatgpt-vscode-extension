@@ -1,0 +1,115 @@
+@import "../../../media/styles/mixins.scss";
+@import "../../../media/styles/colors.scss";
+@import "../../../media/styles/resets.scss";
+
+.no-conversation-chat {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+
+  h3 {
+    font-style: normal;
+  }
+}
+
+.chat-container {
+  overflow: hidden;
+
+  .chat-message:nth-child(odd) {
+    background-color: $color-gray-500;
+  }
+
+  .chat-message:nth-child(even) {
+    background-color: transparent;
+  }
+
+  .chat-message {
+    width: 100%;
+    color: $color-text;
+    border: rgba($color: #000000, $alpha: 5);
+
+    .content {
+      // <div "text-base gap-4 md:gap-6 md:max-w-2xl lg:max-w-xl xl:max-w-3xl p-4 md:py-6 flex lg:px-0 m-auto">
+      display: flex;
+      gap: 1rem;
+      padding: 1rem;
+      margin: auto;
+
+      @include breakpoint(md) {
+        max-width: 42rem;
+      }
+      @include breakpoint(lg) {
+        max-width: 36rem;
+      }
+      @include breakpoint(xl) {
+        max-width: 48rem;
+      }
+    }
+
+    .icon {
+      flex-grow: 0;
+      flex-shrink: 0;
+      display: inline-block;
+      width: 1rem;
+      height: 1rem;
+    }
+  }
+}
+
+.send-message-panel {
+  width: 100%;
+  padding-block: 1rem;
+  position: absolute;
+  bottom: 0;
+  background-color: $color-gray-900;
+
+  .input-container {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    background-color: $color-gray-700;
+    box-sizing: border-box;
+    border-radius: 0.25rem;
+    padding: 0.75rem;
+    margin-inline: 2rem;
+    position: relative;
+  }
+
+  .user-input {
+    line-height: 1.5rem !important;
+    font-size: 1rem !important;
+    font: inherit;
+    color: $color-text;
+    outline: none;
+    resize: none;
+    border: none;
+    box-sizing: border-box;
+    padding: 0;
+    padding-right: 1.25rem;
+    background-color: transparent;
+    width: 100%;
+
+    &:focus {
+      box-shadow: var(--tw-ring-inset) 0 0 0
+        calc(0px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+
+      &-visible {
+        box-shadow: var(--tw-ring-inset) 0 0 0
+          calc(0px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+      }
+    }
+
+    &::placeholder {
+      color: $color-placeholder-text;
+    }
+  }
+
+  .submit-button {
+    position: absolute;
+    right: 0.625rem;
+    bottom: 1rem;
+  }
+}

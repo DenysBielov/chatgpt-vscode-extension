@@ -1,0 +1,118 @@
+{
+  "name": "gpt-assistant",
+  "displayName": "GPT Assistant",
+  "description": "Extension that enables user to use ChatGPT right from the editor.",
+  "publisher": "Denys Bielov",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.77.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "gptAssistantPanel",
+          "title": "GPT Assistant",
+          "icon": "media/icons/logo.svg"
+        }
+      ]
+    },
+    "views": {
+      "gptAssistantPanel": [
+        {
+          "type": "webview",
+          "id": "gpt-assistant.chatView",
+          "name": "Assistant"
+        },
+        {
+          "type": "webview",
+          "id": "gpt-assistant.conversationsView",
+          "name": "Conversations"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "gpt-assistant.askQuestion",
+        "title": "GPT Assistant: Ask Question"
+      },
+      {
+        "command": "gpt-assistant.createConversation",
+        "title": "Create conversation",
+        "category": "GPT Assistant",
+        "icon": "$(add)"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "gpt-assistant.askQuestion",
+          "group": "gpt-assistant-menu"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "gpt-assistant.createConversation",
+          "when": "view == gpt-assistant.conversationsView",
+          "group": "navigation"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "webpack",
+    "watch": "webpack --watch",
+    "package": "webpack --mode production --devtool hidden-source-map",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.21.4",
+    "@babel/preset-env": "^7.21.4",
+    "@babel/preset-react": "^7.18.6",
+    "@types/glob": "^8.1.0",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "16.x",
+    "@types/react": "^18.0.33",
+    "@types/react-dom": "^18.0.11",
+    "@types/uuid": "^9.0.1",
+    "@types/vscode": "^1.77.0",
+    "@typescript-eslint/eslint-plugin": "^5.56.0",
+    "@typescript-eslint/parser": "^5.56.0",
+    "@vscode/test-electron": "^2.3.0",
+    "babel-loader": "^9.1.2",
+    "css-loader": "^6.7.3",
+    "eslint": "^8.36.0",
+    "glob": "^8.1.0",
+    "html-webpack-plugin": "^5.5.0",
+    "mini-css-extract-plugin": "^2.7.5",
+    "mocha": "^10.2.0",
+    "sass": "^1.61.0",
+    "sass-loader": "^13.2.2",
+    "style-loader": "^3.3.2",
+    "ts-loader": "^9.4.2",
+    "typescript": "^4.9.5",
+    "webpack": "^5.77.0",
+    "webpack-cli": "^5.0.1"
+  },
+  "dependencies": {
+    "@vscode/webview-ui-toolkit": "^1.2.2",
+    "eventsource-parser": "^1.0.0",
+    "jquery": "^3.6.4",
+    "openai": "^3.2.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "tailwind": "^4.0.0",
+    "uuid": "^9.0.0",
+    "web-streams-polyfill": "^3.2.1"
+  }
+}

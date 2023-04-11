@@ -1,0 +1,1 @@
+export const CONVERSATIONS_STORE_KEY = "conversations";
