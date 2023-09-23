@@ -8,7 +8,7 @@ import "./styles.scss";
 declare const vscode: VsCodeApi;
 
 export const Conversations: React.FC = () => {
-  const [conversations, setConversations] = React.useState([] as Conversation[]);
+  const [conversations, setConversations] = React.useState<Conversation[] | undefined>(undefined);
 
   React.useEffect(() => {
     window.addEventListener("message", (async (event: any) => {
@@ -16,15 +16,22 @@ export const Conversations: React.FC = () => {
 
       switch (data.command) {
         case "refreshConversations": {
-          const conversations: Conversation[] = data.conversations;
-          setConversations(conversations);
+          const newConversations: Conversation[] = data.conversations;
+          setConversations(newConversations);
+          break;
         }
       }
-    }).bind(this));
-  });
+    }));
+
+    vscode.postMessage({ command: "initializeBackend" });
+  }, []);
 
   const handleOnConversationClick = (conversation: Conversation) => {
-    vscode.postMessage({command: "selectConversation", conversation});
+    vscode.postMessage({ command: "selectConversation", conversation });
+  };
+
+  const handleConversationRemove = (conversation: Conversation) => {
+    vscode.postMessage({ command: "removeConversation", conversation });
   };
 
   return (
@@ -32,8 +39,8 @@ export const Conversations: React.FC = () => {
       <div
         id="conversations-container"
       >
-        {conversations.map(conversation =>
-          <ConversationComponent onClick={handleOnConversationClick} conversation={conversation} />)}
+        {conversations && conversations.map(conversation =>
+          <ConversationComponent onRemoveConversation={handleConversationRemove} onClick={handleOnConversationClick} conversation={conversation} />)}
       </div>
     </div>
   );

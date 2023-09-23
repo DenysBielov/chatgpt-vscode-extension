@@ -4,5 +4,5 @@ export default interface Conversation {
   id: string;
   messages: Message[];
   title: string;
-  selected: Boolean;
+  selected: boolean;
 }

@@ -1,21 +1,24 @@
 import { ChatCompletionRequestMessage, ChatCompletionRequestMessageRoleEnum, Configuration, OpenAIApi } from "openai";
-import { OpenAIModel, OpenAIModelID, OpenAIModels } from "./types/openai";
-import { DEFAULT_SYSTEM_PROMPT } from "./utils/const";
-import { Message } from "./types/message";
-const { ReadableStream } = require('web-streams-polyfill');
+import { OpenAIModel, OpenAIModelID, OpenAIModels } from "../types/openai";
+import { DEFAULT_SYSTEM_PROMPT } from "../utils/const";
+import { Message } from "../types/message";
+import { ReadableStream } from 'web-streams-polyfill';
 import {
   createParser,
   ParsedEvent,
   ReconnectInterval,
 } from 'eventsource-parser';
+import { getDefaultCreateTitlePrompt } from "./consts";
 
 export class OpenAiClient {
+  private DEFAULT_COMPLITION_MODEL = "text-davinci-003";
+
   private _configuration: Configuration;
   private _openai: OpenAIApi;
   private _models: OpenAIModel[];
-  private _initialized: Boolean;
+  private _initialized: boolean;
 
-  constructor(apiKey?: string) {;
+  constructor(apiKey?: string) {
     if (!apiKey && !process.env.OPENAI_API_KEY) {
       throw new MissingApiKeyError();
     }
@@ -107,6 +110,30 @@ export class OpenAiClient {
     return stream;
   }
 
+  public async sendCompletionRequest(request: string) {
+    const models = await this._openai.listModels();
+    const davinchiIdRegex = /text-davinci-[0-9]+/;
+    const davinchiModels = models.data.data
+      .map(model => model.id)
+      .filter(modelId => modelId.match(davinchiIdRegex))
+      .sort()
+      .reverse();
+
+    const prompt = getDefaultCreateTitlePrompt(request); 
+    console.log("prompt", prompt);
+    const response = await this._openai.createCompletion({
+      "model": davinchiModels[0] || "text-davinci-003",
+      "prompt": prompt,
+      "max_tokens": 7,
+      "temperature": 0,
+      "top_p": 1,
+      "n": 1,
+      "stream": false,
+    });
+
+    return response.data.choices[0].text;
+  }
+
   private checkClient() {
     if (!this._openai) {
       throw new ClientNotInitializedError();
@@ -114,8 +141,8 @@ export class OpenAiClient {
   }
 }
 
-class MissingApiKeyError extends Error {
-  message: string = "OpenAI API key is not specified.";
+export class MissingApiKeyError extends Error {
+  message = "OpenAI API key is not specified.";
 }
 
-class ClientNotInitializedError extends Error { }
+export class ClientNotInitializedError extends Error { }

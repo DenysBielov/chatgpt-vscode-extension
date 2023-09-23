@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Message } from '../../../types/message';
 import { v4 as uuidv4 } from 'uuid';
+import { BiNavigation } from "react-icons/bi";
 
 export interface ISendMessagePanelProps {
   onMessageSend: (message: Message) => void;
@@ -12,25 +13,35 @@ export const SendMessagePanel: React.FC<ISendMessagePanelProps> = (props: ISendM
 
   const handleTextAreaInput = (event: React.FormEvent<HTMLTextAreaElement>) => {
     setTextAreaValue(textAreaRef.current ? textAreaRef.current.value : "");
-
     autoResizeTextArea(event);
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if ((event.key === "Enter" || event.keyCode === 13) && !event.shiftKey) {
+      event.preventDefault();
       handleMessagePost();
     }
   };
 
   const handleMessagePost = () => {
-    if(!textAreaRef.current){
+    if (!textAreaRef.current) {
       return;
     }
-    
+
     const textAreaValue = textAreaRef.current.value;
     textAreaRef.current.value = "";
 
-    props.onMessageSend({ content: textAreaValue, role: "user", id: uuidv4() });
+    if (!textAreaValue) {
+      //TODO: add "empty message" error.
+      return;
+    }
+
+    props.onMessageSend({
+      content: textAreaValue, 
+      role: "user", 
+      id: uuidv4(),
+      datetime: new Date()
+    });
   };
 
   return (
@@ -52,22 +63,8 @@ export const SendMessagePanel: React.FC<ISendMessagePanelProps> = (props: ISendM
             onInput={handleTextAreaInput}
             onKeyDown={handleKeyDown}
           ></textarea>
-          <button id="user-input-submit" disabled={!textAreaValue} className="submit-button " onClick={(event) => { event.preventDefault(); handleMessagePost(); }}>
-            <svg
-              stroke="currentColor"
-              fill="none"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="h-4 w-4 mr-1"
-              height="1em"
-              width="1em"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <line x1="22" y1="2" x2="11" y2="13"></line>
-              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-            </svg>
+          <button id="user-input-submit" disabled={!textAreaValue} className="submit-button" onClick={(event) => { event.preventDefault(); handleMessagePost(); }}>
+            <BiNavigation />
           </button>
         </div>
       </form >

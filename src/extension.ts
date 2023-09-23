@@ -3,19 +3,22 @@ import { ChatWebviewProvider } from "./apps/chat/webview";
 import { ConversationsWebviewProvider } from './apps/conversations/webview';
 import ConversationRepository from './apps/conversations/repository';
 import Store from "./store/store";
-import { UUID } from 'crypto';
 import Conversation from './types/conversation';
+import { OPEN_AI_API_KEY } from './utils/const';
 
 export function activate(context: vscode.ExtensionContext) {
 	initWebviews(context);
 }
 
 const initWebviews = (context: vscode.ExtensionContext) => {
-	const store = new Store(context);
-	const conversationRepository = new ConversationRepository(store);
+	const workspaceStore = new Store(context.workspaceState);
+	const globalStore = new Store(context.globalState);
+	const conversationRepository = new ConversationRepository(workspaceStore);
+
+	const openAiApiKey: string = globalStore.get(OPEN_AI_API_KEY);
 
 	//TODO: make it more generic?
-	const chatProvider = new ChatWebviewProvider(context, conversationRepository);
+	const chatProvider = new ChatWebviewProvider(context, conversationRepository, openAiApiKey);
 	const conversationsProvider = new ConversationsWebviewProvider(context, conversationRepository);
 
 	context.subscriptions.push(
@@ -29,8 +32,36 @@ const initWebviews = (context: vscode.ExtensionContext) => {
 		vscode.commands.registerCommand("gpt-assistant.createConversation", () => {
 			const conversation = conversationRepository.create();
 
-			chatProvider.changeConversation(conversation);
-			conversationsProvider.refreshConversations();
+			vscode.commands.executeCommand("gpt-assistant.selectConversation", conversation);
+		})
+	);
+
+	context.subscriptions.push(
+		vscode.commands.registerCommand("gpt-assistant.changeOpenAiApiKey", (key) => {
+			globalStore.set(OPEN_AI_API_KEY, key);
+		})
+	);
+
+	context.subscriptions.push(
+		vscode.commands.registerCommand("gpt-assistant.removeConversation", (conversation: Conversation) => {
+			vscode.window
+				.showInformationMessage(`Do you want to remove conversation "${conversation.title}"?`, "Yes", "No")
+				.then(answer => {
+					if (answer === "Yes") {
+						conversationRepository.delete(conversation);
+
+						if (!conversationRepository.getSelected()) {
+							const conversations = conversationRepository.getAll();
+
+							if (conversations) {
+								conversationRepository.select(conversations.find(() => true)!);
+							}
+						}
+
+						chatProvider.changeConversation(conversation);
+						conversationsProvider.refreshConversations();
+					}
+				});
 		})
 	);
 
@@ -43,8 +74,5 @@ const initWebviews = (context: vscode.ExtensionContext) => {
 		})
 	);
 };
-
-// This method is called when your extension is deactivated
-export function deactivate() { }
 
 

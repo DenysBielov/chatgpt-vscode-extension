@@ -1,29 +1,28 @@
 import * as vscode from 'vscode';
 
 export default class Store {
-  state: any;
-
-  constructor(private readonly context: vscode.ExtensionContext) {
-    this.state = context.workspaceState;
+  constructor(private readonly _state: vscode.Memento) {
   }
 
   // Set a value in the state
   set(key: string, value: any) {
-    this.state[key] = value;
+    this._state.update(key, value);
   }
 
   // Get a value from the state
-  get(key: string) {
-    return this.state[key];
+  get<TData>(key: string): TData {
+    return this._state.get(key) as TData;
   }
 
   // Remove a value from the state
   remove(key: string) {
-    delete this.state[key];
+    this._state.update(key, undefined);
   }
 
   // Clear the state
   clear() {
-    this.state = {};
+    for (const key in this._state.keys()) {
+      this._state.update(key, undefined);
+    }
   }
 }

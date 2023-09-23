@@ -5,13 +5,23 @@ import { Chat } from "./components/Chat";
 import { SendMessagePanel } from "./components/SendMessagePanel";
 import { Message } from "../../types/message";
 import { VsCodeApi } from "../../utils/vscode";
-import { Command } from "../../types/command";
 import "./styles.scss";
+import ApiKeyPanel from "./components/ApiKeyPanel";
+import Loader from "../shared/components/Loader";
 
 declare const vscode: VsCodeApi;
 
 const ChatApp: React.FC = () => {
   const [conversation, setConversation] = useState(undefined);
+  const [isApiKeyPanelVisible, setIsApiKeyPanelVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const handleApiKeySubmit = (key: string) => {
+    vscode.postMessage({
+      command: "setOpenAiApiKey",
+      key
+    });
+  };
 
   const handleMessageSend = (message: Message) => {
     vscode.postMessage({
@@ -30,14 +40,31 @@ const ChatApp: React.FC = () => {
           setConversation(command.conversation);
           break;
         }
+        case "toggleApiKeyView": {
+          setIsApiKeyPanelVisible(command.visible);
+          break;
+        }
+        case "toggleLoading": {
+          setIsLoading(command.isLoading);
+        }
       }
     });
-  }).bind(this));
 
-  return <div>
-    <Chat conversation={conversation} />
-    <SendMessagePanel onMessageSend={handleMessageSend} />
-  </div>;
+    vscode.postMessage({ command: "initializeBackend" });
+  }), []);
+
+  return isLoading ?
+    <div>
+      <Loader></Loader>
+    </div>
+    :
+    (isApiKeyPanelVisible ?
+      <ApiKeyPanel onApiKeySubmit={handleApiKeySubmit} />
+      :
+      <div>
+        <Chat conversation={conversation} />
+        <SendMessagePanel onMessageSend={handleMessageSend} />
+      </div>);
 };
 
 const root = ReactDOMClient.createRoot(document.getElementById('root')!);

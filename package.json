@@ -1,9 +1,10 @@
 {
-  "name": "gpt-assistant",
-  "displayName": "GPT Assistant",
-  "description": "Extension that enables user to use ChatGPT right from the editor.",
-  "publisher": "Denys Bielov",
-  "version": "0.0.1",
+  "name": "chatgpt-code-assistant",
+  "icon": "./media/icons/logo.png",
+  "displayName": "GPT Code Assistant",
+  "description": "Extension that enables user to use OpenAI API right from the editor with ChatGPT-like interface and additional features.",
+  "publisher": "DenysBielov",
+  "version": "0.0.2",
   "engines": {
     "vscode": "^1.77.0"
   },
@@ -73,6 +74,7 @@
     "watch-tests": "tsc -p . -w --outDir out",
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
+    "lint:fix": "eslint src --ext ts --fix",
     "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
@@ -84,14 +86,15 @@
     "@types/node": "16.x",
     "@types/react": "^18.0.33",
     "@types/react-dom": "^18.0.11",
+    "@types/react-syntax-highlighter": "^15.5.7",
     "@types/uuid": "^9.0.1",
     "@types/vscode": "^1.77.0",
-    "@typescript-eslint/eslint-plugin": "^5.56.0",
-    "@typescript-eslint/parser": "^5.56.0",
+    "@typescript-eslint/eslint-plugin": "^5.62.0",
+    "@typescript-eslint/parser": "^5.62.0",
     "@vscode/test-electron": "^2.3.0",
     "babel-loader": "^9.1.2",
     "css-loader": "^6.7.3",
-    "eslint": "^8.36.0",
+    "eslint": "^8.50.0",
     "glob": "^8.1.0",
     "html-webpack-plugin": "^5.5.0",
     "mini-css-extract-plugin": "^2.7.5",
@@ -111,8 +114,19 @@
     "openai": "^3.2.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-icons": "^4.11.0",
+    "react-markdown": "^8.0.7",
+    "react-syntax-highlighter": "^15.5.0",
+    "react-tooltip": "^5.11.1",
+    "rehype-mathjax": "^4.0.2",
+    "remark-gfm": "^3.0.1",
+    "remark-math": "^5.1.1",
     "tailwind": "^4.0.0",
     "uuid": "^9.0.0",
     "web-streams-polyfill": "^3.2.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/DenysBielov/chatgpt-vscode-extension.git"
   }
 }
