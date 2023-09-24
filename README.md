@@ -15,3 +15,8 @@ You can ask for code snippets and very conviently use them in editor! You can in
 
 ## Conversations
 You can have different conversations saved for your workspace.
+
+## Features in development
+- Global and workspace related conversations
+- Context aware conversations using LangChain and vector databases
+- Quick actions, like refactoring question, find-issues question etc.
